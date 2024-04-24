@@ -9,13 +9,6 @@ This project is an automated bot designed to gather news articles from a specifi
 - Extraction of article metadata including title, date, author, description, and picture link.
 - Analysis functions to count occurrences of search phrases in the article descriptions and detect the presence of money-related information.
 
-## Getting Started
-1. Clone the repository to your local machine.
-2. Install the required dependencies by running:
-    ```
-    pip install -r requirements.txt
-    ```
-3. Run the bot by executing the Python script `search_us_election.py`.
 
 ## Usage
 1. Upon running the bot, you will be prompted to enter the search topic and target month.
@@ -26,6 +19,3 @@ This project is an automated bot designed to gather news articles from a specifi
 - Python 3.x
 - robocorp-browser
 - rpaframework
-
-## Branching Strategy
-Branch names should follow the convention:
