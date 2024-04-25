@@ -19,6 +19,7 @@ def search_us_election():
     try:
         page = browser.goto("https://gothamist.com/")
 
+        print("Passed going to the website")
         # Click the search bar button to bring up the search input field
         search_bar_button = page.locator("css=.search-button button")
         search_bar_button.click()
@@ -39,7 +40,7 @@ def search_us_election():
 
         # Initialize Excel file
         excel_file = Excel()
-        output_folder = Path(__file__).resolve().parent / "output" / "News.xlsx"
+        output_folder = Path(__file__).resolve().parent / "News.xlsx"
         excel_file.open_workbook(output_folder)
 
         # headers = [["Title"], ["Date"], ["Author"], ["Description"], ["Picture Link"]]
