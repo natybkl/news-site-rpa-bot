@@ -20,6 +20,8 @@ def search_us_election():
         print("Checkpoint 1")
         page = browser.goto("https://gothamist.com/")
         print("Checkpoint 2")
+
+        page.wait_for_timeout(50000)
         # Click the search bar button to bring up the search input field
         search_bar_button = page.locator("css=.search-button button")
         search_bar_button.click()
