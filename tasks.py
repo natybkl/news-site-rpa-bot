@@ -17,18 +17,21 @@ def search_us_election():
         headless=False,
     )
     try:
+        print("Checkpoint 1")
         page = browser.goto("https://gothamist.com/")
-
-        print("Passed going to the website")
+        print("Checkpoint 2")
         # Click the search bar button to bring up the search input field
         search_bar_button = page.locator("css=.search-button button")
         search_bar_button.click()
 
+        print("Checkpoint 3")
         # Fill the search input field and press the search button
         search_bar_input = page.locator("css=input.search-page-input")
         search_bar_input.fill("US Election")
+        print("Checkpoint 4")
         search_button = page.locator("css=button.search-page-button")
         search_button.click()
+        print("Checkpoint 5")
 
         # Wait for the search results to load
         page.wait_for_selector("css=.search-page-results")
