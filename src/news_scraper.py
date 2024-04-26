@@ -1,18 +1,18 @@
 import os
-import re
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 import requests
 from robocorp import browser
 from robocorp.tasks import task
-from RPA.Robocorp.WorkItems import WorkItems
 from RPA.Excel.Files import Files as Excel
+from src.news_article import NewsArticle
 
 class NewsScraper:
-    def main(self):
+    def __init__(self):
         load_dotenv()
 
+    def main(self):
         search_query = os.getenv("SEARCH_QUERY")
         news_timeframe = int(os.getenv("NEWS_TIMEFRAME"))
         category = os.getenv("CATEGORY")
@@ -50,7 +50,7 @@ class NewsScraper:
             title_divs = page.query_selector_all("css=div.v-card")
 
             excel_file = Excel()
-            output_folder = Path(__file__).resolve().parent / "data" / "News.xlsx"
+            output_folder = Path(__file__).resolve().parent.parent / "data" / "News.xlsx"
             excel_file.open_workbook(output_folder)
 
             if "News" not in excel_file.list_worksheets():
@@ -69,11 +69,13 @@ class NewsScraper:
             news_links = ["https://gothamist.com" + div.query_selector("css=a").get_attribute('href') for div in title_divs]
 
             for news_link in news_links[:10]:
-                title, picture, author, date, news = self.get_description(news_link)
+                title, picture, author, date, news = self.get_details(news_link)
+        
+                news_article = NewsArticle(title, picture, author, date, news)
 
-                formatted_date, month = self.parse_and_format_date(date)
-                search_phrase_count = self.count_occurrences_in_description(news, search_query)
-                news_contains_money = self.contains_money(news)
+                formatted_date, month = news_article.parse_and_format_date()
+                search_phrase_count = news_article.count_occurrences_in_description(search_query)
+                news_contains_money = news_article.contains_money()
 
                 current_month = datetime.now().month
 
@@ -101,7 +103,7 @@ class NewsScraper:
             print(f"An error occurred: {e}")
 
 
-    def get_description(self, news_link):
+    def get_details(self, news_link):
         new_page = browser.goto(news_link)
 
         new_page.wait_for_selector("css=div.content")
@@ -120,24 +122,9 @@ class NewsScraper:
         return title, picture, author, date, news
 
 
-    def parse_and_format_date(self, date_str):
-        date_obj = datetime.strptime(date_str, "%b %d, %Y")
-        formatted_date = date_obj.strftime("%Y-%m-%d") 
-        month = date_obj.month
-
-        return formatted_date, month
+    
+    
+    
 
 
-    def count_occurrences_in_description(self, news, search_phrases):
-        count = 0
-        for phrase in search_phrases.split():
-            count += news.lower().count(phrase.lower())
-
-        return count
-
-
-    def contains_money(self, text):
-        money_pattern = r'\$[\d,.]+|\d+\s?(dollars|USD)'
-        match = re.search(money_pattern, text)
-        
-        return match is not None
+    
