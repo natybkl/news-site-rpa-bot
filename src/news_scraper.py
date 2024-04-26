@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
@@ -8,15 +9,19 @@ from RPA.Excel.Files import Files as Excel
 from src.news_article import NewsArticle
 
 class NewsScraper:
-    def __init__(self):
-        load_dotenv()
-
     def main(self):
-        search_query = os.getenv("SEARCH_QUERY")
-        news_timeframe = int(os.getenv("NEWS_TIMEFRAME"))
-        category = os.getenv("CATEGORY")
+        inputs = self.load_inputs_from_json()
+        search_query = inputs.get("SEARCH_QUERY")
+        news_timeframe = int(inputs.get("NEWS_TIMEFRAME"))
+        category = inputs.get("CATEGORY")
 
         self.scrape_news(search_query, news_timeframe, category)
+
+    def load_inputs_from_json(self):
+        json_file_path = Path(__file__).resolve().parent.parent / "data" / "input.json"
+        with open(json_file_path, "r") as file:
+            inputs = json.load(file)
+        return inputs
 
     def scrape_news(self, search_query, news_timeframe, category):
         browser.configure(
