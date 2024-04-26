@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
-import requests
 from robocorp import browser
 from robocorp.tasks import task
 from RPA.Excel.Files import Files as Excel
@@ -28,11 +27,11 @@ class NewsScraper:
         try:
             page = browser.goto("https://gothamist.com/")
 
-            search_bar_button = page.locator("css=.search-button button")
-            search_bar_button.click()
+            search_button = page.locator("css=.search-button button")
+            search_button.click()
 
-            search_bar_input = page.locator("css=input.search-page-input")
-            search_bar_input.fill(search_query)
+            search_input = page.locator("css=input.search-page-input")
+            search_input.fill(search_query)
 
             search_button = page.locator("css=button.search-page-button")
             search_button.click()
@@ -69,12 +68,12 @@ class NewsScraper:
             news_links = ["https://gothamist.com" + div.query_selector("css=a").get_attribute('href') for div in title_divs]
 
             for news_link in news_links[:10]:
-                title, picture, author, date, news = self.get_details(news_link)
+                title, picture, author, date, news = self.get_news_details(news_link)
         
                 news_article = NewsArticle(title, picture, author, date, news)
 
-                formatted_date, month = news_article.parse_and_format_date()
-                search_phrase_count = news_article.count_occurrences_in_description(search_query)
+                formatted_date, month = news_article.format_date()
+                search_phrase_count = news_article.count_search_phrases(search_query)
                 news_contains_money = news_article.contains_money()
 
                 current_month = datetime.now().month
@@ -102,8 +101,7 @@ class NewsScraper:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-
-    def get_details(self, news_link):
+    def get_news_details(self, news_link):
         new_page = browser.goto(news_link)
 
         new_page.wait_for_selector("css=div.content")
@@ -115,16 +113,8 @@ class NewsScraper:
         date = ' '.join(raw_date.split()[1:])
         paragraphs = new_page.query_selector_all("css=.streamfield.article-body .streamfield-paragraph.rte-text p")
 
-        news = ""
+        news_content = ""
         for paragraph in paragraphs:
-            news = news + paragraph.inner_text() + '\n' + '\n'
+            news_content = news_content + paragraph.inner_text() + '\n' + '\n'
 
-        return title, picture, author, date, news
-
-
-    
-    
-    
-
-
-    
+        return title, picture, author, date, news_content

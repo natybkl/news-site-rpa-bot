@@ -17,7 +17,7 @@ class NewsArticle:
         
         return match is not None
     
-    def count_occurrences_in_description(self, search_phrase):
+    def count_search_phrases(self, search_phrase):
         count = 0
         news = self.news.lower()
         for phrase in search_phrase.split():
@@ -25,7 +25,7 @@ class NewsArticle:
 
         return count
     
-    def parse_and_format_date(self):
+    def format_date(self):
         date_obj = datetime.strptime(self.date, "%b %d, %Y")
         formatted_date = date_obj.strftime("%Y-%m-%d") 
         month = date_obj.month
